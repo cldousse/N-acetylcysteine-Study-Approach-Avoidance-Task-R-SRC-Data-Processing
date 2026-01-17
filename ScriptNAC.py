@@ -1,11 +1,11 @@
-# Traitement data AAT task - NAC Study U73
+# “AAT Data Analysis – NAC Study U73 (Traitement data AAT task - NAC Study U73)
 
-# Convertir les fichiers txt en fichiers Excel et les enregistrer
-# Supprimer les essais 1 et 3
-# Identifier les erreurs corrigées et non corrigées dans chaque condition (approche et évitement + total)
-# Supprimer tous les essais erronés 
-# Identifier présence RTs>5000ms dans 'first RTs', si le cas les supprimer
-# Identifier et éliminer les RTs >3SD dans 'first RTs' pour chaque condition 'approche' et 'évitement' et chaque stim 'Neutre vs. Cocaïne'
+# Convert text files into Excel format and store them (Convertir les fichiers txt en fichiers Excel et les enregistrer)
+# Exclude trials 1 and 3 (Supprimer les essais 1 et 3)
+# Identify corrected and uncorrected errors within each condition (approach, avoidance, and overall) (Identifier les erreurs corrigées et non corrigées dans chaque condition (approche et évitement + total))
+# Delete all error trials (Supprimer tous les essais erronés)
+# Identify RTs exceeding 5000 ms in the ‘first RTs’ and exclude them (Identifier présence RTs>5000ms dans 'first RTs', si le cas les supprimer)
+# Identify and exclude RTs exceeding 3 SDs in the ‘first RTs’ separately for each condition (approach, avoidance) and each stimulus (Neutral vs. Cocaine) (Identifier et éliminer les RTs >3SD dans 'first RTs' pour chaque condition 'approche' et 'évitement' et chaque stim 'Neutre vs. Cocaïne')
 
 import os
 import pandas as pd
@@ -134,11 +134,11 @@ print("=============================================\n")
 
 ##########3. IDENTIFY CORRECTED vs. UNCORRECTED ERRORS BY CONDITION (toward / away)
 
-# Dossier contenant les fichiers Excel
+# Directory containing the Excel files (Dossier contenant les fichiers Excel)
 excel_folder = '/Users/clemencedousset/Desktop/Etude_NAC/CODE_NAC/excel_data'
 result_rows = []
 
-# Compteurs globaux
+# Overall counters (Compteurs globaux)
 global_counts = {
     'Toward_corrected': 0,
     'Toward_uncorrected': 0,
@@ -146,7 +146,7 @@ global_counts = {
     'Away_uncorrected': 0
 }
 
-# Parcours des fichiers .xlsx
+# Processing the .xlsx files (Parcours des fichiers .xlsx)
 for filename in os.listdir(excel_folder):
     if filename.endswith('.xlsx'):
         file_path = os.path.join(excel_folder, filename)
@@ -158,7 +158,7 @@ for filename in os.listdir(excel_folder):
             print(f"[ERROR] Could not read {filename}: {e}")
             continue
 
-        # Initialisation des compteurs pour ce fichier
+        # Initialize the counters for this file (Initialisation des compteurs pour ce fichier)
         file_counts = {
             'Toward_corrected': 0,
             'Toward_uncorrected': 0,
@@ -166,7 +166,7 @@ for filename in os.listdir(excel_folder):
             'Away_uncorrected': 0
         }
 
-        # Parcours ligne par ligne
+        # Iterating row by row (Parcours ligne par ligne)
         for _, row in df.iterrows():
             try:
                 A = row.iloc[0]
@@ -228,7 +228,7 @@ df_results.to_csv(summary_csv_path, index=False)
 print("\n✅ DONE — Results saved to:")
 print(summary_csv_path)
 
-##########4. CALCUL DES TRs en éliminant >500ms + >3SD et sans prendre en compte les essais erronés
+##########4. RTs are calculated after excluding responses > 500 ms, > 3 SDs, and all erroneous trials (CALCUL DES TRs en éliminant >500ms + >3SD et sans prendre en compte les essais erronés)
 
 from statistics import mean, stdev
 
@@ -252,7 +252,7 @@ for filename in os.listdir(excel_folder):
             'Away_uncorrected': 0
         }
 
-        # Préparation des sous-groupes
+        # Preparation of the subgroups (Préparation des sous-groupes)
         values = {
             'T_D1': [],
             'T_D0': [],
@@ -272,7 +272,7 @@ for filename in os.listdir(excel_folder):
                 continue
 
             if pd.isnull(I) or I > 5000:
-                continue  # exclure les valeurs manquantes ou extrêmes
+                continue  # Remove missing or outlier values (exclure les valeurs manquantes ou extrêmes)
 
             is_error = False
 
@@ -304,7 +304,7 @@ for filename in os.listdir(excel_folder):
                     file_counts['Away_uncorrected'] += 1
                     is_error = True
 
-            # Stocker uniquement les lignes sans erreur
+            # Retain only error-free rows (Stocker uniquement les lignes sans erreur)
             if not is_error:
                 if A == 2 and D == 1:
                     values['T_D1'].append(I)
@@ -315,7 +315,7 @@ for filename in os.listdir(excel_folder):
                 elif A == 4 and D == 0:
                     values['A_D0'].append(I)
 
-        # Fonction de nettoyage + calcul stats
+        # Data cleaning + stats calculation function (Fonction de nettoyage + calcul stats)
         def compute_stats(val_list):
             if len(val_list) < 3:
                 return (len(val_list), None, None, 0)
@@ -363,19 +363,19 @@ print(f"\n✅ DONE — Final summary saved to:\n{summary_csv_path}")
 
 ##########5. CALCULATION OF SRC SCORES
 
-# Charger le CSV
+# Load the CSV file (Charger le CSV)
 summary_csv_path = '/Users/clemencedousset/Desktop/Etude_NAC/CODE_NAC/excel_data/Summary.csv'
 df = pd.read_csv(summary_csv_path)
 
-# Calcul des scores SRC
+# Compute SRC scores (Calcul des scores SRC)
 df['SRCscore_ImageNeutral'] = df['AwayCocaïne_ImageNeutral_mean'] - df['TowardCocaïne_ImageNeutral_mean']
 df['SRCscore_ImageCocaïne'] = df['AwayCocaïne_ImageCocaïne_mean'] - df['TowardCocaïne_ImageCocaïne_mean']
 
-# Sauvegarder le tableau mis à jour
-# Extraire un nombre au début du nom du fichier pour trier
+# Save the updated dataset (Sauvegarder le tableau mis à jour)
+# Extract the leading number from the filename for sorting (Extraire un nombre au début du nom du fichier pour trier)
 df['SortKey'] = df['Filename'].str.extract(r'(\d+)').astype(float)
 
-# Trier selon cette clé numérique
+# Sort based on this numeric key (Trier selon cette clé numérique)
 df = df.sort_values(by='SortKey').drop(columns='SortKey')
 
 df.to_csv(summary_csv_path, index=False)
