@@ -15,8 +15,8 @@ import csv
 
 
 # Define folder paths
-txt_folder = '/Users/clemencedousset/Desktop/Etude_NAC/CODE_NAC/raw_data'
-excel_folder = '/Users/clemencedousset/Desktop/Etude_NAC/CODE_NAC/excel_data'
+txt_folder = 'raw_data/'
+excel_folder = 'excel_data/'
 
 # Create output folder if it doesn't exist
 os.makedirs(excel_folder, exist_ok=True)
@@ -88,9 +88,6 @@ print("=============================================\n")
 
 ##########2. REMOVE BLOCKS 1 AND 3 (they are pre-task trial blocks)
 
-# Path to your Excel files folder
-excel_folder = '/Users/clemencedousset/Desktop/Etude_NAC/CODE_NAC/excel_data'
-
 # Counters
 success_count = 0
 failure_count = 0
@@ -135,7 +132,7 @@ print("=============================================\n")
 ##########3. IDENTIFY CORRECTED vs. UNCORRECTED ERRORS BY CONDITION (toward / away)
 
 # Directory containing the Excel files (Dossier contenant les fichiers Excel)
-excel_folder = '/Users/clemencedousset/Desktop/Etude_NAC/CODE_NAC/excel_data'
+excel_folder = 'excel_data/'
 result_rows = []
 
 # Overall counters (Compteurs globaux)
@@ -364,7 +361,7 @@ print(f"\n✅ DONE — Final summary saved to:\n{summary_csv_path}")
 ##########5. CALCULATION OF SRC SCORES
 
 # Load the CSV file (Charger le CSV)
-summary_csv_path = '/Users/clemencedousset/Desktop/Etude_NAC/CODE_NAC/excel_data/Summary.csv'
+summary_csv_path = 'excel_data/Summary.csv'
 df = pd.read_csv(summary_csv_path)
 
 # Compute SRC scores (Calcul des scores SRC)
